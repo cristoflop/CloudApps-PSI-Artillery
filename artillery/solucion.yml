@@ -1,0 +1,23 @@
+# Configuracion del test script
+
+config:
+  target: 'https://localhost:8443'
+  phases:
+    - duration: 40
+      arrivalRate: 5
+scenarios:
+  - name: "Usuario sin logear pide todos los libros y pide mas info del primero"
+    weight: 7 # 7/10 (70%) (la suma de todos los weight de los escenarios es el total)
+    flow:
+      - get:
+          url: "/api/books/"
+  - name: "Usuario logeado crea un libro y lo pide para comprobar"
+    weight: 2 # 2/10 casos
+    flow:
+      - get:
+          url: "/api/books/"
+  - name: "Admin crea un libro, comprueba que lo ha creado, lo borra, y comprueba que lo ha borrado"
+    weight: 1 # 1/10 casos
+    flow:
+      - get:
+          url: "/api/books/"
