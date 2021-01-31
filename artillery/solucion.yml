@@ -2,15 +2,30 @@
 
 config:
   target: 'https://localhost:8443'
+  plugins:
+    expect: { }
   phases:
     - duration: 40
-      arrivalRate: 5
+      arrivalRate: 5 # Numero de usuarios por segundo
+  payload:
+    path: "books.csv"
+    fields:
+      - "title"
+      - "description"
+  ensure:
+    p95: 100 # El 95% de las conexiones tienen menos de 100ms de latencia
+    maxErrorRate: 0 # 0% de tasa de error
+  http:
+    pool: 8 # Numero de conexiones simultaneas
 scenarios:
   - name: "Usuario sin logear pide todos los libros y pide mas info del primero"
     weight: 7 # 7/10 (70%) (la suma de todos los weight de los escenarios es el total)
     flow:
       - get:
           url: "/api/books/"
+          capture:
+            json: "$[0].title"
+            as: "title"
   - name: "Usuario logeado crea un libro y lo pide para comprobar"
     weight: 2 # 2/10 casos
     flow:
