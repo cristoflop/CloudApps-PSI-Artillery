@@ -19,6 +19,12 @@ config:
     maxErrorRate: 0 # 0% de tasa de error
   http:
     pool: 8 # Numero de conexiones simultaneas
+  variables:
+    username:
+      - "user"
+      - "admin"
+    password:
+      - "pass"
 scenarios:
   - name: "Usuario sin logear pide todos los libros y pide mas info del primero"
     weight: 7 # 7/10 (70%) (la suma de todos los weight de los escenarios es el total)
