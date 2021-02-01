@@ -70,4 +70,31 @@ scenarios:
     weight: 1 # 1/10 casos
     flow:
       - get:
+          url: "/api/logIn"
+          auth:
+            user: "{{ admin }}"
+            pass: "{{ password }}"
+            expect:
+              - statusCode: 200
+      - post:
           url: "/api/books/"
+          json:
+            title: "{{ bookTitle }}"
+            description: "{{ bookDescription }}"
+          capture:
+            - json: "$.id"
+              as: "id"
+          expect:
+            - statusCode: 201
+      - get:
+          url: "/api/books/{{ id }}"
+          expect:
+            - statusCode: 200
+      - delete:
+          url: "/api/books/{{ id }}"
+          expect:
+            - statusCode: 204
+      - get:
+          url: "/api/books/{{ id }}"
+          expect:
+            - statusCode: 404
