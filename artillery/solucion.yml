@@ -57,15 +57,15 @@ scenarios:
           json:
             title: "{{ bookTitle }}"
             description: "{{ bookDescription }}"
-            capture:
-              - json: "$.title"
-                as: "title"
-            expect:
-              - statusCode: 201
-              - contentType: json
-              - equals:
-                  - matchesRegexp: /title/\d+"
-                  - "{{ title }}"
+          capture:
+            - json: "$.id"
+              as: "id"
+          expect:
+            - statusCode: 201
+      - get:
+          url: "/api/books/{{ id }}"
+          expect:
+            - statusCode: 200
   - name: "Admin crea un libro, comprueba que lo ha creado, lo borra, y comprueba que lo ha borrado"
     weight: 1 # 1/10 casos
     flow:
