@@ -7,13 +7,14 @@ config:
   plugins:
     expect: { }
   phases:
-    - duration: 10 # 40 Duracion de la fase
+    - duration: 40 # Duracion de la fase
       arrivalRate: 5 # Numero de usuarios por segundo
   payload:
     path: "books.csv"
     fields:
-      - "title"
-      - "description"
+      - "bookTitle"
+      - "bookDescription"
+    order: random
   ensure:
     p95: 100 # El 95% de las conexiones tienen menos de 100ms de latencia
     maxErrorRate: 0 # 0% de tasa de error
@@ -22,6 +23,7 @@ config:
   variables:
     username:
       - "user"
+    admin:
       - "admin"
     password:
       - "pass"
@@ -44,7 +46,26 @@ scenarios:
     weight: 2 # 2/10 casos
     flow:
       - get:
+          url: "/api/logIn"
+          auth:
+            user: "{{ username }}"
+            pass: "{{ password }}"
+            expect:
+              - statusCode: 200
+      - post:
           url: "/api/books/"
+          json:
+            title: "{{ bookTitle }}"
+            description: "{{ bookDescription }}"
+            capture:
+              - json: "$.title"
+                as: "title"
+            expect:
+              - statusCode: 201
+              - contentType: json
+              - equals:
+                  - matchesRegexp: /title/\d+"
+                  - "{{ title }}"
   - name: "Admin crea un libro, comprueba que lo ha creado, lo borra, y comprueba que lo ha borrado"
     weight: 1 # 1/10 casos
     flow:
