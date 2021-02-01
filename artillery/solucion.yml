@@ -2,10 +2,12 @@
 
 config:
   target: 'https://localhost:8443'
+  tls:
+    rejectUnauthorized: false
   plugins:
     expect: { }
   phases:
-    - duration: 40
+    - duration: 10 # 40 Duracion de la fase
       arrivalRate: 5 # Numero de usuarios por segundo
   payload:
     path: "books.csv"
@@ -24,8 +26,14 @@ scenarios:
       - get:
           url: "/api/books/"
           capture:
-            json: "$[0].title"
-            as: "title"
+            - json: "$[0].title"
+              as: "title"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - equals:
+                - "SUEÑOS DE ACERO Y NEON"
+                - "{{ title }}"
   - name: "Usuario logeado crea un libro y lo pide para comprobar"
     weight: 2 # 2/10 casos
     flow:
